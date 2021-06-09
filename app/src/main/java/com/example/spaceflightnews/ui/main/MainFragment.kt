@@ -15,6 +15,7 @@ import com.example.spaceflightnews.R
 import com.example.spaceflightnews.SpaceflightNewsApplication
 import com.example.spaceflightnews.ViewModelFactory
 import com.example.spaceflightnews.service.ArticleResponse
+import com.google.android.material.button.MaterialButton
 
 class MainFragment : Fragment(), ArticleCardListener {
 
@@ -47,6 +48,14 @@ class MainFragment : Fragment(), ArticleCardListener {
                 viewLifecycleOwner,
                 Observer {
                     recyclerViewAdapter.articles = it
+        })
+
+        val filterButton = inflatedView.findViewById<MaterialButton>(R.id.filter_button)
+        filterButton.setOnClickListener {
+            viewModel.toggleFilterToReadLater()
+        }
+        viewModel.filterToReadLater.observe(viewLifecycleOwner, Observer {
+            filterButton.text = if (it) "View All" else "View Read Later"
         })
 
         return inflatedView

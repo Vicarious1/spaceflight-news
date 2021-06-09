@@ -11,7 +11,16 @@ import kotlinx.coroutines.launch
 class MainViewModel(private val articleRepository: ArticleRepository, private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO) : ViewModel() {
 
     //Note: Ideally I would update a table in Room with checked state and have that trigger a LiveData observer, however I'm running short on time
-    val readLaterArticleIds = MutableLiveData<List<String>>(listOf())
+    private val readLaterArticleIds = MutableLiveData<List<String>>(listOf())
+
+    val filterToReadLater = MutableLiveData<Boolean>(false)
+
+    fun toggleFilterToReadLater() {
+        val shouldFilter = filterToReadLater.value
+        shouldFilter?.let {
+            filterToReadLater.postValue(!shouldFilter)
+        }
+    }
 
     fun startRetrievingArticles() {
         viewModelScope.launch(ioDispatcher) {
@@ -23,15 +32,15 @@ class MainViewModel(private val articleRepository: ArticleRepository, private va
         val outData = MediatorLiveData<List<ArticleModel>>()
         val articlesLiveData = articleRepository.getArticles()
 
-        outData.addSource(articlesLiveData) { outData.value = mapArticleResponsesToArticleModels(it, readLaterArticleIds.value) }
-        outData.addSource(readLaterArticleIds) { outData.value = mapArticleResponsesToArticleModels(articlesLiveData.value, it) }
+        outData.addSource(articlesLiveData) { outData.value = mapArticleResponsesToArticleModels(it, readLaterArticleIds.value, filterToReadLater.value == true) }
+        outData.addSource(readLaterArticleIds) { outData.value = mapArticleResponsesToArticleModels(articlesLiveData.value, it, filterToReadLater.value == true) }
+        outData.addSource(filterToReadLater) { outData.value = mapArticleResponsesToArticleModels(articlesLiveData.value, readLaterArticleIds.value, it)}
 
         return outData
     }
 
-    private fun mapArticleResponsesToArticleModels(responses: List<ArticleResponse>?, readLaterArticleIds: List<String>?): List<ArticleModel> {
+    private fun mapArticleResponsesToArticleModels(responses: List<ArticleResponse>?, readLaterArticleIds: List<String>?, filterToReadLater: Boolean): List<ArticleModel> {
         return responses
-            ?.filter { it.articleId != null }
             ?.map {
             ArticleModel (
                 articleId = it.articleId ?: "",
@@ -39,7 +48,11 @@ class MainViewModel(private val articleRepository: ArticleRepository, private va
                 url = it.url ?: "",
                 readLater = readLaterArticleIds?.contains(it.articleId) == true
             )
-        } ?: listOf()
+        }?.filter { it.articleId.isNotEmpty() && !shouldFilterForReadLaterState(it.readLater, filterToReadLater) } ?: listOf()
+    }
+
+    private fun shouldFilterForReadLaterState(articledMarkedAsReadLater: Boolean, shouldFilterToReadLater: Boolean): Boolean {
+        return shouldFilterToReadLater && !articledMarkedAsReadLater
     }
 
     fun onReadLaterTapped(articleId: String) {
