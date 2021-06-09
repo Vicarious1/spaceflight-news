@@ -10,6 +10,8 @@ class ArticleRepository(private val articleService: ArticleService) {
     private val articlesLiveData = MutableLiveData<List<ArticleResponse>>()
 
     suspend fun startLoadingArticles() {
+        //todo make call every X seconds to catch any new articles
+
         val response = articleService.getAllArticles()
         if (response.isSuccessful) {
             val items = response.body()

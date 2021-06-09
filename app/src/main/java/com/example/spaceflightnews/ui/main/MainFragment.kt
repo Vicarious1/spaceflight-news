@@ -52,8 +52,8 @@ class MainFragment : Fragment(), ArticleCardListener {
         return inflatedView
     }
 
-    override fun onReadLaterChecked(checked: Boolean, articleId: String) {
-
+    override fun onReadLaterTapped(articleId: String) {
+        viewModel.onReadLaterTapped(articleId)
     }
 
     override fun onShareTapped(articleUrl: String) {

@@ -4,11 +4,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.spaceflightnews.R
+import com.example.spaceflightnews.data.ArticleModel
 import com.example.spaceflightnews.service.ArticleResponse
 
 class ArticlesRecyclerViewAdapter(private val cardListener: ArticleCardListener) : RecyclerView.Adapter<ArticleViewHolder>() {
 
-    var articles: List<ArticleResponse> = listOf()
+    var articles: List<ArticleModel> = listOf()
         set(value) {
             field = value
             notifyDataSetChanged()
