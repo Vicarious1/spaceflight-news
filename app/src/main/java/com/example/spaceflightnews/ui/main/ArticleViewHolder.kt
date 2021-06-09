@@ -17,10 +17,10 @@ class ArticleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     fun bindData(article: ArticleResponse, articleCardListener: ArticleCardListener) {
         title.text = article.title
         checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
-            articleCardListener.onReadLaterChecked(isChecked)
+            articleCardListener.onReadLaterChecked(isChecked, article.articleId ?: "")
         }
         shareButton.setOnClickListener {
-            articleCardListener.onShareTapped()
+            articleCardListener.onShareTapped(article.url ?: "")
         }
     }
 }

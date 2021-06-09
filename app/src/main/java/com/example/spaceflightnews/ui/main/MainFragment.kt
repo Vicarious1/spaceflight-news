@@ -1,5 +1,6 @@
 package com.example.spaceflightnews.ui.main
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -51,10 +52,19 @@ class MainFragment : Fragment(), ArticleCardListener {
         return inflatedView
     }
 
-    override fun onReadLaterChecked(checked: Boolean) {
+    override fun onReadLaterChecked(checked: Boolean, articleId: String) {
+
     }
 
-    override fun onShareTapped() {
+    override fun onShareTapped(articleUrl: String) {
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, articleUrl)
+            type = "text/plain"
+        }
+
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        startActivity(shareIntent)
     }
 
 }
