@@ -53,6 +53,8 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-jackson:$retrofit_version"
 
+    implementation "androidx.cardview:cardview:1.0.0"
+
     def room_version = "2.3.0"
 
     implementation "androidx.room:room-runtime:$room_version"

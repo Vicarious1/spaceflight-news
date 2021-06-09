@@ -1,7 +1,6 @@
 package com.example.spaceflightnews.ui.main
 
 import androidx.lifecycle.*
-import com.example.spaceflightnews.data.ArticleEntity
 import com.example.spaceflightnews.data.ArticleRepository
 import com.example.spaceflightnews.service.ArticleResponse
 import kotlinx.coroutines.CoroutineDispatcher

@@ -8,14 +8,14 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.spaceflightnews.R
 import com.example.spaceflightnews.SpaceflightNewsApplication
 import com.example.spaceflightnews.ViewModelFactory
-import com.example.spaceflightnews.data.ArticleEntity
-import com.example.spaceflightnews.data.ArticleRepository
 import com.example.spaceflightnews.service.ArticleResponse
 
-class MainFragment : Fragment() {
+class MainFragment : Fragment(), ArticleCardListener {
 
     companion object {
         fun newInstance() = MainFragment()
@@ -23,26 +23,38 @@ class MainFragment : Fragment() {
 
     private val viewModel: MainViewModel by viewModels() { ViewModelFactory(requireActivity().application as SpaceflightNewsApplication) }
 
-    private lateinit var title: TextView
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        viewModel.startRetrievingArticles()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         val inflatedView = inflater.inflate(R.layout.main_fragment, container, false)
 
-        title = inflatedView.findViewById(R.id.message)
+
+        val recyclerViewAdapter = ArticlesRecyclerViewAdapter(this)
+        val recyclerView = inflatedView.findViewById<RecyclerView>(R.id.recycler_view)
+
+        recyclerView.adapter = recyclerViewAdapter
+
+        val layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.layoutManager = layoutManager
 
         viewModel.getArticles().observe(
                 viewLifecycleOwner,
-                Observer { articles: List<ArticleResponse> ->
-            title.text = articles[0].title
+                Observer {
+                    recyclerViewAdapter.articles = it
         })
 
         return inflatedView
+    }
+
+    override fun onReadLaterChecked(checked: Boolean) {
+    }
+
+    override fun onShareTapped() {
     }
 
 }
